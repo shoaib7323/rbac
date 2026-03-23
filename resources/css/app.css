@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.italic-font { font-family: 'Inter', sans-serif; }
+
+aside nav .active {
+    background-color: rgb(55 48 163);
+    border-left-width: 4px;
+    border-color: white;
+}

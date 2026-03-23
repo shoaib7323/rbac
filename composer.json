@@ -9,7 +9,8 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
-        "laravel/tinker": "^2.8"
+        "laravel/tinker": "^2.8",
+        "spatie/laravel-permission": "^6.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -54,7 +55,7 @@
     },
     "config": {
         "optimize-autoloader": true,
-        "preferred-install": "dist",
+        "preferred-install": "source",
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
@@ -62,5 +63,15 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "http://repo.packagist.org"
+        },
+        "permission": {
+            "type": "path",
+            "url": "./packages/laravel-permission"
+        }
+    }
 }
