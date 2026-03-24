@@ -21,6 +21,15 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            if ($user->hasRole('Super Admin')) {
+                return true;
+            }
+        });
+
+        // Register custom permission check
+        \Illuminate\Support\Facades\Gate::define('permission', function ($user, $slug) {
+            return $user->hasPermission($slug);
+        });
     }
 }

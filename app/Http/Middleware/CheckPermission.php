@@ -15,8 +15,12 @@ class CheckPermission
      */
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (! $request->user() || ! $request->user()->hasPermission($permission)) {
-            abort(403, 'Unauthorized action.');
+        if (! $request->user()) {
+            return redirect()->route('login');
+        }
+
+        if (! $request->user()->hasPermission($permission)) {
+            abort(403, 'Unauthorized action. You do not have permission to access this feature: ' . $permission);
         }
 
         return $next($request);

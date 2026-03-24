@@ -9,7 +9,7 @@ trait HasPermissions
 {
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'user_role');
+        return $this->belongsToMany(Role::class, 'user_role')->withPivot('module_id')->withTimestamps();
     }
 
     public function hasRole($role)
@@ -23,13 +23,41 @@ trait HasPermissions
 
     public function hasPermission($permission)
     {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
         return $this->hasRoleThroughPermission($permission) || $this->hasDirectPermission($permission);
     }
 
     protected function hasRoleThroughPermission($permission)
     {
+        $action = Action::with('feature.module')->where('slug', $permission)->first();
+        if (!$action) return false;
+
+        $moduleId = $action->feature->module_id;
+
         foreach ($this->roles as $role) {
-            if ($role->permissions->contains('name', $permission)) {
+            // Check scope from pivot
+            $scopeModuleId = $role->pivot->module_id;
+
+            // If scope is restricted to a DIFFERENT module, skip this role assignment
+            if ($scopeModuleId && $scopeModuleId != $moduleId) {
+                continue;
+            }
+
+            // Check if user has full access to the module this action belongs to
+            $hasFullModuleAccess = $role->modules()
+                ->where('module_id', $moduleId)
+                ->wherePivot('full_access', true)
+                ->exists();
+
+            if ($hasFullModuleAccess) {
+                return true;
+            }
+
+            // Check for specific action access
+            if ($role->actions->contains('slug', $permission)) {
                 return true;
             }
         }
